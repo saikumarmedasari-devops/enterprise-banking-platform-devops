@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('app') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir('app') {
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        stage('List Artifacts') {
+            steps {
+                sh 'find app/target -type f'
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'app/target/*.jar',
+                                 fingerprint: true
+            }
+        }
+    }
+}
